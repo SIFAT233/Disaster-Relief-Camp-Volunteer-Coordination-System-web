@@ -5,6 +5,12 @@
 
 // Section Switching Logic
 function showSection(sectionId, element) {
+    const activeSection = document.getElementById(sectionId);
+    if (!activeSection) return;
+
+    // Check if already active to prevent redundant animations
+    if (activeSection.style.display === 'block') return;
+
     // Hide all sections
     const sections = document.querySelectorAll('.content-section');
     sections.forEach(section => {
@@ -12,9 +18,12 @@ function showSection(sectionId, element) {
     });
 
     // Show the targeted section
-    const activeSection = document.getElementById(sectionId);
-    if (activeSection) {
-        activeSection.style.display = 'block';
+    activeSection.style.display = 'block';
+    
+    // Reset main content scroll position smoothly
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+        mainContent.scrollTop = 0;
     }
 
     // Update active state in sidebar
@@ -22,7 +31,10 @@ function showSection(sectionId, element) {
     navItems.forEach(item => {
         item.classList.remove('active');
     });
-    element.classList.add('active');
+    
+    if (element) {
+        element.classList.add('active');
+    }
 }
 
 // Mark Task as Complete
