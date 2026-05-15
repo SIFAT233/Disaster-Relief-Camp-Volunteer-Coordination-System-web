@@ -1,3 +1,19 @@
+<?php 
+require_once 'db_connect.php'; 
+
+// Fetch Stats
+$camp_count = $conn->query("SELECT COUNT(*) as total FROM camps")->fetch_assoc()['total'] ?? 0;
+$volunteer_count = $conn->query("SELECT COUNT(*) as total FROM users JOIN roles ON users.role_id = roles.role_id WHERE role_name = 'Volunteer'")->fetch_assoc()['total'] ?? 0;
+$donation_sum = $conn->query("SELECT SUM(amount) as total FROM donations WHERE status = 'Verified'")->fetch_assoc()['total'] ?? 0;
+$family_count = $conn->query("SELECT COUNT(*) as total FROM affected_families")->fetch_assoc()['total'] ?? 0;
+
+// Fetch Active Camps
+$camps_query = "SELECT camps.*, disaster_events.category, disaster_events.event_name 
+                FROM camps 
+                LEFT JOIN disaster_events ON camps.event_id = disaster_events.event_id 
+                LIMIT 3";
+$camps_result = $conn->query($camps_query);
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -29,22 +45,22 @@
   <!-- Navigation -->
   <header class="navbar">
     <div class="container nav-inner">
-      <a href="Homepage.html" class="logo">
+      <a href="index.php" class="logo">
         <span class="logo-mark">🛟</span>
         <span class="logo-text">Disaster<small>Relief Network</small></span>
       </a>
       <nav class="nav-links" id="navLinks">
-        <a href="Homepage.html#home">Home</a>
-        <a href="Homepage.html#about">About</a>
-        <a href="Homepage.html#stakeholders">Roles</a>
-        <a href="Homepage.html#features">Features</a>
-        <a href="Homepage.html#camps">Active Camps</a>
+        <a href="index.php#home">Home</a>
+        <a href="index.php#about">About</a>
+        <a href="index.php#stakeholders">Roles</a>
+        <a href="index.php#features">Features</a>
+        <a href="index.php#camps">Active Camps</a>
         <a href="#donate">Donate</a>
         <a href="#contact">Contact</a>
       </nav>
       <div class="nav-actions">
-        <a href="Login.html" class="btn btn-ghost">Login</a>
-        <a href="Login.html" class="btn btn-primary">Sign Up</a>
+        <a href="Login.php" class="btn btn-ghost">Login</a>
+        <a href="Login.php" class="btn btn-primary">Sign Up</a>
         <button class="hamburger" id="hamburger" aria-label="Menu">☰</button>
       </div>
     </div>
@@ -65,19 +81,19 @@
         </div>
         <div class="hero-stats">
           <div>
-            <h3>120+</h3>
+            <h3><?php echo number_format($camp_count); ?>+</h3>
             <p>Active Camps</p>
           </div>
           <div>
-            <h3>8,500</h3>
+            <h3><?php echo number_format($volunteer_count); ?></h3>
             <p>Volunteers</p>
           </div>
           <div>
-            <h3>50K+ TK</h3>
+            <h3><?php echo number_format($donation_sum); ?> TK</h3>
             <p>Donations Raised</p>
           </div>
           <div>
-            <h3>23,000+</h3>
+            <h3><?php echo number_format($family_count); ?>+</h3>
             <p>Families Helped</p>
           </div>
         </div>
@@ -106,36 +122,22 @@
         <h2>Active Relief Camps</h2>
       </div>
       <div class="camp-grid">
-        <article class="camp-card">
-          <div class="camp-img" style="background-image: url('hh.jpg.png');"></div>
-          <div class="camp-body">
-            <span class="tag tag-red">Flood</span>
-            <h3>Sylhet Central Camp</h3>
-            <p>📍 Sylhet · 1,200 families served</p>
-            <div class="progress"><span style="width:78%"></span></div>
-            <small>Stock level: 78%</small>
-          </div>
-        </article>
-        <article class="camp-card">
-          <div class="camp-img" style="background-image: url('h2.jpg.png');"></div>
-          <div class="camp-body">
-            <span class="tag tag-red">Cyclone</span>
-            <h3>Cox's Bazar Coastal Camp</h3>
-            <p>📍 Cox's Bazar · 850 families</p>
-            <div class="progress"><span style="width:54%"></span></div>
-            <small>Stock level: 54%</small>
-          </div>
-        </article>
-        <article class="camp-card">
-          <div class="camp-img" style="background-image: url('h3.jpg.png');"></div>
-          <div class="camp-body">
-            <span class="tag tag-red">Recovery</span>
-            <h3>Khulna Recovery Center</h3>
-            <p>📍 Khulna · 420 families</p>
-            <div class="progress"><span style="width:91%"></span></div>
-            <small>Stock level: 91%</small>
-          </div>
-        </article>
+        <?php if ($camps_result && $camps_result->num_rows > 0): ?>
+            <?php while($camp = $camps_result->fetch_assoc()): ?>
+                <article class="camp-card">
+                  <div class="camp-img" style="background-image: url('hh.jpg.png');"></div>
+                  <div class="camp-body">
+                    <span class="tag tag-red"><?php echo htmlspecialchars($camp['category'] ?? 'General'); ?></span>
+                    <h3><?php echo htmlspecialchars($camp['camp_name']); ?></h3>
+                    <p>📍 <?php echo htmlspecialchars($camp['address']); ?></p>
+                    <div class="progress"><span style="width:70%"></span></div>
+                    <small>Capacity: <?php echo $camp['capacity']; ?> families</small>
+                  </div>
+                </article>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <p>No active camps at the moment.</p>
+        <?php endif; ?>
       </div>
     </div>
   </section>
@@ -218,7 +220,7 @@
           <span class="role-link">Manager Dashboard →</span>
         </a>
 
-        <a href="Login.html" class="role-card r3">
+        <a href="Login.php" class="role-card r3">
           <div class="role-icon">🤝</div>
           <h3>Volunteer</h3>
           <p>View assigned tasks, update status, and record relief distributions.</p>
@@ -310,7 +312,7 @@
   <footer id="contact" class="footer">
     <div class="container footer-grid">
       <div>
-        <a href="Homepage.html" class="logo light">
+        <a href="index.php" class="logo light">
           <span class="logo-mark">🛟</span>
           <span class="logo-text">Ashroy<small>Relief Network</small></span>
         </a>
@@ -326,9 +328,9 @@
       <div>
         <h5>Get Involved</h5>
         <a href="apply-help.html">Apply for Help</a>
-        <a href="Login.html">Become a Volunteer</a>
+        <a href="Login.php">Become a Volunteer</a>
         <a href="donate.html">Donate</a>
-        <a href="Login.html">Login</a>
+        <a href="Login.php">Login</a>
       </div>
       <div>
         <h5>Contact</h5>
