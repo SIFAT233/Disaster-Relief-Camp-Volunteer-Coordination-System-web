@@ -5,26 +5,35 @@ require_once 'db_connect.php';
 // Registration Logic
 if (isset($_POST['register'])) {
     $full_name = mysqli_real_escape_string($conn, $_POST['full_name']);
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $email    = mysqli_real_escape_string($conn, $_POST['email']);
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $role_id = 3; // Default to Volunteer (based on the roles table)
+
+    // Fetch role_id for 'Volunteer' dynamically (safer than hardcoding)
+    $role_result = $conn->query("SELECT role_id FROM roles WHERE role_name = 'Volunteer' LIMIT 1");
+    if (!$role_result || $role_result->num_rows === 0) {
+        $_SESSION['error'] = "System error: Volunteer role not found in database. Please run database.sql first.";
+        header("Location: Login.php");
+        exit();
+    }
+    $role_id = $role_result->fetch_assoc()['role_id'];
 
     // Check if email already exists
-    $check_email = "SELECT * FROM users WHERE email='$email'";
+    $check_email = "SELECT user_id FROM users WHERE email='$email' LIMIT 1";
     $result = $conn->query($check_email);
 
-    if ($result->num_rows > 0) {
-        $_SESSION['error'] = "Email already exists!";
+    if ($result && $result->num_rows > 0) {
+        $_SESSION['error'] = "This email is already registered. Please log in.";
         header("Location: Login.php");
         exit();
     } else {
-        $sql = "INSERT INTO users (full_name, email, password, role_id, status) VALUES ('$full_name', '$email', '$password', '$role_id', 'Pending')";
+        $sql = "INSERT INTO users (role_id, full_name, email, password_hash, account_status) 
+                VALUES ('$role_id', '$full_name', '$email', '$password', 'Pending')";
         if ($conn->query($sql) === TRUE) {
-            $_SESSION['success'] = "Registration successful! Please wait for approval.";
+            $_SESSION['success'] = "Registration successful! Your account is pending approval. Please wait.";
             header("Location: Login.php");
             exit();
         } else {
-            $_SESSION['error'] = "Error: " . $conn->error;
+            $_SESSION['error'] = "Registration failed: " . $conn->error;
             header("Location: Login.php");
             exit();
         }
@@ -41,23 +50,23 @@ if (isset($_POST['login'])) {
 
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
-        if (password_verify($password, $user['password'])) {
-            if ($user['status'] == 'Approved' || $user['role_name'] == 'Admin') {
+        if (password_verify($password, $user['password_hash'])) {
+            if ($user['account_status'] == 'Approved' || $user['role_name'] == 'Admin') {
                 $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['full_name'] = $user['full_name'];
                 $_SESSION['role'] = $user['role_name'];
-                
+
                 // Redirect based on role
                 if ($user['role_name'] == 'Admin') {
                     header("Location: admin.php");
                 } elseif ($user['role_name'] == 'Camp Manager') {
                     header("Location: manager.php");
                 } else {
-                    header("Location: dashboard.html");
+                    header("Location: dashboard.php");
                 }
                 exit();
             } else {
-                $_SESSION['error'] = "Your account is " . $user['status'] . ".";
+                $_SESSION['error'] = "Your account is " . $user['account_status'] . ".";
                 header("Location: Login.php");
                 exit();
             }

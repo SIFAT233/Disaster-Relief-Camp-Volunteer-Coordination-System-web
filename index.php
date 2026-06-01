@@ -2,15 +2,16 @@
 require_once 'db_connect.php'; 
 
 // Fetch Stats
-$camp_count = $conn->query("SELECT COUNT(*) as total FROM camps")->fetch_assoc()['total'] ?? 0;
+$camp_count = $conn->query("SELECT COUNT(*) as total FROM relief_camps")->fetch_assoc()['total'] ?? 0;
 $volunteer_count = $conn->query("SELECT COUNT(*) as total FROM users JOIN roles ON users.role_id = roles.role_id WHERE role_name = 'Volunteer'")->fetch_assoc()['total'] ?? 0;
-$donation_sum = $conn->query("SELECT SUM(amount) as total FROM donations WHERE status = 'Verified'")->fetch_assoc()['total'] ?? 0;
+$donation_sum = $conn->query("SELECT SUM(amount) as total FROM donations WHERE donation_status = 'Received'")->fetch_assoc()['total'] ?? 0;
 $family_count = $conn->query("SELECT COUNT(*) as total FROM affected_families")->fetch_assoc()['total'] ?? 0;
 
 // Fetch Active Camps
-$camps_query = "SELECT camps.*, disaster_events.category, disaster_events.event_name 
-                FROM camps 
-                LEFT JOIN disaster_events ON camps.event_id = disaster_events.event_id 
+$camps_query = "SELECT rc.*, dc.category_name, cl.address 
+                FROM relief_camps rc 
+                LEFT JOIN disaster_categories dc ON rc.category_id = dc.category_id 
+                LEFT JOIN camp_locations cl ON rc.location_id = cl.location_id 
                 LIMIT 3";
 $camps_result = $conn->query($camps_query);
 ?>
@@ -20,7 +21,7 @@ $camps_result = $conn->query($camps_query);
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Disaster Relief Camp & Volunteer Coordination System</title>
+  <title>Disaster Relief Network</title>
   <meta name="description"
     content="An integrated platform for disaster camp management, volunteer coordination, donation tracking, and aid delivery to affected communities." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -127,11 +128,14 @@ $camps_result = $conn->query($camps_query);
                 <article class="camp-card">
                   <div class="camp-img" style="background-image: url('hh.jpg.png');"></div>
                   <div class="camp-body">
-                    <span class="tag tag-red"><?php echo htmlspecialchars($camp['category'] ?? 'General'); ?></span>
+                    <span class="tag tag-red"><?php echo htmlspecialchars($camp['category_name'] ?? 'General'); ?></span>
                     <h3><?php echo htmlspecialchars($camp['camp_name']); ?></h3>
                     <p>📍 <?php echo htmlspecialchars($camp['address']); ?></p>
-                    <div class="progress"><span style="width:70%"></span></div>
-                    <small>Capacity: <?php echo $camp['capacity']; ?> families</small>
+                    <?php 
+                      $percent = $camp['capacity'] > 0 ? round(($camp['current_population'] / $camp['capacity']) * 100) : 0;
+                    ?>
+                    <div class="progress"><span style="width:<?php echo $percent; ?>%"></span></div>
+                    <small>Population: <?php echo $camp['current_population']; ?> / <?php echo $camp['capacity']; ?> people (<?php echo $percent; ?>%)</small>
                   </div>
                 </article>
             <?php endwhile; ?>

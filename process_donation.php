@@ -14,13 +14,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // For this demonstration, we'll assume there is a 'Guest' user with ID 1 or something.
     // Or we can just insert a new user for this guest if they provide email (but the form doesn't have email).
     
-    // For now, I'll try to use the logged in user or a default 'Anonymous Donor' (user_id 1).
-    if (!$donor_id) {
-        $donor_id = 1; // Assuming user_id 1 exists as a default or Admin
-    }
+    // If donor_id doesn't exist, we use NULL (guest donation is allowed as donor_id is nullable)
+    $donor_val = $donor_id ? "'$donor_id'" : "NULL";
     
-    $sql = "INSERT INTO donations (donor_id, amount, payment_method, transaction_id, status) 
-            VALUES ('$donor_id', '$amount', '$payment_method', '$transaction_id', 'Pending')";
+    $sql = "INSERT INTO donations (donor_id, donation_type, amount, payment_method, donation_status) 
+            VALUES ($donor_val, 'Money', '$amount', '$payment_method', 'Pending')";
     
     if ($conn->query($sql) === TRUE) {
         echo json_encode(["status" => "success", "message" => "Donation recorded! Thank you.", "transaction_id" => $transaction_id]);

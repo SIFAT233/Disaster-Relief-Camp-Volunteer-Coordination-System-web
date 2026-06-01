@@ -2,7 +2,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "disaster_relief_pro_db";
+$dbname = "disaster_relief_db";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);

@@ -369,3 +369,321 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; }
   .dashboard-container { grid-template-columns: 1fr; }
   .sidebar { display: none; }
 }
+
+/* Supplies Split Layout */
+.supplies-container {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .supplies-container {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+.supplies-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.logged-supplies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* Custom scrollbar for supplies list */
+.logged-supplies-list::-webkit-scrollbar {
+  width: 6px;
+}
+.logged-supplies-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+.logged-supplies-list::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 3px;
+}
+.logged-supplies-list::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+.supply-log-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--line-strong);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-lg);
+  position: relative;
+  animation: logFadeIn 0.35s var(--ease) both;
+  transition: all 0.3s var(--ease);
+}
+
+.supply-log-item:hover {
+  border-color: var(--primary);
+  transform: translateX(4px) scale(1.01);
+  background: #ffffff;
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.05);
+}
+
+@keyframes logFadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.supply-log-icon {
+  width: 44px;
+  height: 44px;
+  background: var(--gold-soft);
+  color: var(--primary);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.05);
+}
+
+.supply-log-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.supply-log-info h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: var(--ink);
+}
+
+.supply-log-info p {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.supply-log-time {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: right;
+  align-self: center;
+  line-height: 1.3;
+  flex-shrink: 0;
+}
+
+/* Reports Split Layout */
+.reports-container {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .reports-container {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+.reports-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.logged-reports-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* Custom scrollbar for reports list */
+.logged-reports-list::-webkit-scrollbar {
+  width: 6px;
+}
+.logged-reports-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+.logged-reports-list::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 3px;
+}
+.logged-reports-list::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+.report-log-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--line-strong);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-lg);
+  position: relative;
+  animation: logFadeIn 0.35s var(--ease) both;
+  transition: all 0.3s var(--ease);
+}
+
+.report-log-item:hover {
+  border-color: var(--primary);
+  transform: translateX(4px) scale(1.01);
+  background: #ffffff;
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.05);
+}
+
+.report-log-icon {
+  width: 44px;
+  height: 44px;
+  background: rgba(239, 68, 68, 0.07);
+  color: var(--primary);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.05);
+}
+
+.report-log-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.report-log-info h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: var(--ink);
+}
+
+.report-log-info p {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 4px;
+  white-space: normal;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.report-log-loc {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.report-log-time {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: right;
+  align-self: center;
+  line-height: 1.3;
+  flex-shrink: 0;
+}
+
+/* Premium Progress Card styling */
+.progress-card {
+  border-left: 4px solid var(--primary) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.02) !important;
+  transition: all 0.3s var(--ease);
+}
+.progress-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(239, 68, 68, 0.04) !important;
+}
+
+/* Smooth Input Focus outline glow */
+.form-group input, .form-group textarea, .form-group select {
+  transition: border-color 0.25s var(--ease), box-shadow 0.25s var(--ease), background 0.25s var(--ease);
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.08) !important;
+  background: #ffffff !important;
+}
+
+/* Button micro-interactions */
+.btn-primary {
+  transition: transform 0.2s var(--ease), background 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+}
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+/* Profile Page Specific Styles */
+.profile-card {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s var(--ease);
+}
+.profile-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 35px rgba(239, 68, 68, 0.04);
+}
+
+.profile-details-card {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+}
+
+@media (max-width: 992px) {
+  .profile-container {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .profile-details-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .profile-details-card {
+    padding: 20px !important;
+  }
+}
+
+
+

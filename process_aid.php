@@ -8,15 +8,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $phone = mysqli_real_escape_string($conn, $_POST['phone']);
     $address = mysqli_real_escape_string($conn, $_POST['address']);
     
-    // We don't have phone/address in the provided schema for affected_families, 
-    // but they are crucial. I will use the columns if they exist or just head_name and member_count.
-    // Based on the schema provided by the user:
-    // affected_families (family_id, head_name, nid_no, member_count, camp_id)
-    
-    // I will try to insert into the schema provided. 
-    // I'll leave nid_no as NULL or empty for now.
-    
-    $sql = "INSERT INTO affected_families (head_name, member_count) VALUES ('$head_name', '$member_count')";
+    // Find first active camp_id
+    $camp_query = "SELECT camp_id FROM relief_camps LIMIT 1";
+    $camp_res = $conn->query($camp_query);
+    $camp_id = ($camp_res && $camp_res->num_rows > 0) ? $camp_res->fetch_assoc()['camp_id'] : 1;
+
+    $sql = "INSERT INTO affected_families (camp_id, head_name, phone, address, total_members, registration_date, status) 
+            VALUES ('$camp_id', '$head_name', '$phone', '$address', '$member_count', CURDATE(), 'Registered')";
     
     if ($conn->query($sql) === TRUE) {
         echo json_encode(["status" => "success", "message" => "Application submitted successfully!"]);
